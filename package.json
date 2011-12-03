@@ -1,0 +1,30 @@
+{
+  "name": "hubot-amqp",
+  "version": "0.0.1",
+  "author": "Martin Moellenbeck",
+  "keywords": [
+    "github hubot amqp adapter"
+  ],
+  "description": "A Amqp adapter for hubot",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/tombell/hubot-amqp/raw/master/LICENSE"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:5minds/hubot-amqp.git"
+  },
+  "dependencies": {
+    "hubot": ">= 2.0.4"
+  },
+  "devDependencies": {
+    "coffee-script": "1.1.3",
+  },
+  "main": "./src/twitter",
+  "engine": "node > 0.6.0 < 0.7.0",
+  "engines": {
+    "node": "*"
+  }
+}
