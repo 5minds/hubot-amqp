@@ -20,7 +20,7 @@ class Amqp extends Adapter
     answer = strings.join "\n"
 
     # publish the answer
-    @exchange.publish(user, {answer: answer}
+    @exchange.publish(user, {answer: answer})
 
   
   reply: (user, strings...) ->
