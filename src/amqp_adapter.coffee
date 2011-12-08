@@ -8,11 +8,11 @@ class Amqp extends Adapter
   constructor: (robot) ->
     @exchange_name = process.env.HUBOT_AMQP_EXCHANGE_NAME || 'hubot topic'
     
-    @amqp_hostname = process.env.HUBOT_AMQP_HOSTNAME || 'localhost'
+    @amqp_hostname = process.env.HUBOT_AMQP_HOSTNAME || '127.0.0.1'
     @amqp_port = process.env.HUBOT_AMQP_PORT || 5672
     @amqp_login = process.env.HUBOT_AMQP_LOGIN || 'guest'
     @amqp_passwd = process.env.HUBOT_AMQP_PASSWD || 'guest'
-    @amqp_vhost = process.env.HUBOT_AMQP_VHOST || '/'
+    @amqp_vhost = process.env.HUBOT_AMQP_VHOST || '/development'
 
     super robot
 
@@ -32,19 +32,20 @@ class Amqp extends Adapter
       host: @amqp_hostname,
       vhost: @amqp_vhost,
       login: @amqp_login,
-      password: @amqp_passwd,
-      port: @amqp_port})
+      password: @amqp_passwd})
+
+    console.log(util.inspect(@connection))
     
     # create a exchange
     @connection.on 'ready', (conn) ->
-      @connection.exchange @exchange_name, type: 'topic', durable: true, (exchange) ->
+      conn.exchange @exchange_name, type: 'topic', durable: true, (exch) ->
         console.log('Exchange ' + exchange.name + ' ready')
-        @exchange = exchange
+        @exchange = exch
 
         # create a queue
         @connection.queue 'hubot-listener', durable: false, (queue) ->
           console.log('Queue ' + queue.name + ' ready')
-          queue.bind exchange, '#'
+          queue.bind exch, '#'
 
           # subscribe to message
           queue.subscribe (msg, headers, deliveryInfo) ->
