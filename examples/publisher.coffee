@@ -13,6 +13,6 @@ connection.on 'ready', (conn) ->
         util.puts util.inspect msg
 
     connection.exchange 'hubot topic', {type: 'topic'}, (ex) ->
-      ex.publish '', {question: 'world'}, replyTo: q.name
+      ex.publish '', {question: 'hubot PING'}, replyTo: q.name
 
 

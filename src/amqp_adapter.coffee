@@ -19,41 +19,45 @@ class Amqp extends Adapter
   send: (user, strings...) ->
     answer = strings.join "\n"
 
+    console.log("answer : " + answer + " to user " + user)
+
     # publish the answer
-    @exchange.publish(user, {answer: answer})
+    @exchange.publish(user.id {answer: answer})
 
   
   reply: (user, strings...) ->
+
+    console.log("reply: " + user + " with " + stings.join(', '))
+
     @send user, str for str in strings
 
   run: ->
     # connect to rabbit ?!? -> constructor
-    @connection = amqp.createConnection({
-      host: @amqp_hostname,
-      vhost: @amqp_vhost,
-      login: @amqp_login,
-      password: @amqp_passwd})
+    @connection = amqp.createConnection({host: '127.0.0.1', vhost: '/development', login: 'guest', password: 'guest'})
 
-    console.log(util.inspect(@connection))
-    
     # create a exchange
-    @connection.on 'ready', (conn) ->
-      conn.exchange @exchange_name, type: 'topic', durable: true, (exch) ->
-        console.log('Exchange ' + exchange.name + ' ready')
+    @connection.on 'ready', () =>
+
+      #console.log("conn: " + util.inspect(@connection))
+
+      @connection.exchange @exchange_name, type: 'topic', (exch) =>
+        console.log('Exchange ' + exch.name + ' ready')
         @exchange = exch
 
         # create a queue
-        @connection.queue 'hubot-listener', durable: false, (queue) ->
+        @connection.queue 'hubot-listener', durable: false, (queue) =>
           console.log('Queue ' + queue.name + ' ready')
           queue.bind exch, '#'
 
           # subscribe to message
-          queue.subscribe (msg, headers, deliveryInfo) ->
-            console.log(util.inspect(msg))
-            console.log(util.inspect(headers))
-            console.log(util.inspect(deliveryInfo))
+          queue.subscribe (msg, headers, deliveryInfo) =>
+            console.log(msg.question)
+      
+            user = @userForId '1', replyTo: deliveryInfo.replyTo
 
-            @receive new Robot.TextMessage deliveryInfo.replyTo, msg.question
+            console.log(util.inspect(user))
+
+            @receive new Robot.TextMessage user, msg.question
 
 exports.use = (robot) ->
   new Amqp robot
