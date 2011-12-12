@@ -22,7 +22,7 @@ class Amqp extends Adapter
     console.log("answer : " + answer + " to user " + user)
 
     # publish the answer
-    @exchange.publish(user.id {answer: answer})
+    @exchange.publish(user.reply_to, {answer: answer})
 
   
   reply: (user, strings...) ->
@@ -53,11 +53,11 @@ class Amqp extends Adapter
           queue.subscribe (msg, headers, deliveryInfo) =>
             console.log(msg.question)
       
-            user = @userForId '1', replyTo: deliveryInfo.replyTo
+            user = @userForId '1', name: msg.user_name, reply_to: deliveryInfo.replyTo
 
-            console.log(util.inspect(user))
+            message = new Robot.TextMessage user, msg.question
 
-            @receive new Robot.TextMessage user, msg.question
+            @receive message
 
 exports.use = (robot) ->
   new Amqp robot

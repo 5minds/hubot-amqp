@@ -17,7 +17,7 @@ connection.on 'ready', (conn) ->
 
         connection.exchange 'reply-topic', autoDelete: true, type: 'topic', (ex2) ->
           util.puts 'exchange for reply ' + deliveryInfo.replyTo
-          ex2.publish deliveryInfo.replyTo, {msg: 'Answer for: ' + msg.question}
+          ex2.publish deliveryInfo.replyTo, {answer: 'Answer for: ' + msg.question}
 
 
 
