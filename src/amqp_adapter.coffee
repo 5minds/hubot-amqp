@@ -33,7 +33,11 @@ class Amqp extends Adapter
 
   run: ->
     # connect to rabbit ?!? -> constructor
-    @connection = amqp.createConnection({host: '127.0.0.1', vhost: '/development', login: 'guest', password: 'guest'})
+    @connection = amqp.createConnection({host: @amqp_hostname
+    , port: @amqp_port
+    , vhost: @amqp_vhost
+    , login: @amqp_login
+    , password: @amqp_passwd})
 
     # create a exchange
     @connection.on 'ready', () =>
